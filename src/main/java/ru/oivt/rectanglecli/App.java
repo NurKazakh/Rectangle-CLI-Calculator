@@ -1,0 +1,9 @@
+package main.java.ru.oivt.rectanglecli;
+
+public class App {
+
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+
+}
