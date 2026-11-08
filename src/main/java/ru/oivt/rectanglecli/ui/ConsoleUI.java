@@ -1,14 +1,16 @@
 package ru.oivt.rectanglecli.ui;
 
+import java.util.Locale;
 import java.util.Scanner;
 
 import ru.oivt.rectanglecli.model.Rectangle;
 import ru.oivt.rectanglecli.util.InputUtils;
 
+
 public class ConsoleUI {
 
     private final Scanner scanner;
-    
+
     public ConsoleUI(Scanner scanner) {
         this.scanner = scanner;
     }
@@ -19,13 +21,36 @@ public class ConsoleUI {
 
         Rectangle rectangle = readRectangle();
 
-        printRectangleInfo(rectangle);
+        while (true) {
 
-        System.out.println("\nМеню операций.");
+            printMenu(rectangle);
+
+            int choice = InputUtils.readInt(scanner, "Ваш выбор: ");
+
+            switch (choice) {
+
+                case 1:
+                    showPerimeter(rectangle);
+                    break;
+
+                case 2:
+                    showArea(rectangle);
+                    break;
+
+                case 0:
+                    System.out.println("\nРабота программы завершена.");
+                    return;
+
+                default:
+                    System.out.println(
+                            "\nОшибка: неизвестный пункт меню (" + choice + ")."
+                    );
+                    System.out.println("Повторите ввод.\n");
+            }
+        }
     }
 
     private void printHeader() {
-
         System.out.println("========================================");
         System.out.println("       Rectangle CLI Calculator");
         System.out.println("========================================");
@@ -47,14 +72,50 @@ public class ConsoleUI {
         return new Rectangle(a, b);
     }
 
-    private void printRectangleInfo(Rectangle rectangle) {
+    private void printMenu(Rectangle rectangle) {
 
-        System.out.println("\n----------------------------------------");
+        System.out.println("----------------------------------------");
         System.out.printf(
+                Locale.US,
                 "Параметры прямоугольника: a = %.2f, b = %.2f%n",
                 rectangle.getA(),
                 rectangle.getB()
         );
+
         System.out.println("----------------------------------------");
+        System.out.println("Выберите действие:");
+        System.out.println("1) Периметр P = 2(a + b)");
+        System.out.println("2) Площадь S = a * b");
+        System.out.println("0) Выход");
+        System.out.println("----------------------------------------");
+    }
+
+    private void showPerimeter(Rectangle rectangle) {
+
+        double result = rectangle.perimeter();
+
+        System.out.println("\nПериметр:");
+        System.out.printf(
+                Locale.US,
+                "P = 2(a + b) = 2(%.2f + %.2f) = %.2f%n%n",
+                rectangle.getA(),
+                rectangle.getB(),
+                result
+        );
+    }
+
+    private void showArea(Rectangle rectangle) {
+
+        double result = rectangle.area();
+
+        System.out.println("\nПлощадь:");
+
+        System.out.printf(
+                Locale.US,
+                "S = a * b = %.2f * %.2f = %.2f%n%n",
+                rectangle.getA(),
+                rectangle.getB(),
+                result
+        );
     }
 }
