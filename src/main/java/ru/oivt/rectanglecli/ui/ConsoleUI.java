@@ -29,17 +29,34 @@ public class ConsoleUI {
 
             switch (choice) {
 
-                case 1:
-                    showPerimeter(rectangle);
-                    break;
-
-                case 2:
-                    showArea(rectangle);
-                    break;
-
-                case 0:
-                    System.out.println("\nРабота программы завершена.");
-                    return;
+	            case 1:
+	                showPerimeter(rectangle);
+	                break;
+	
+	            case 2:
+	                showArea(rectangle);
+	                break;
+	
+	            case 3:
+	                showDiagonal(rectangle);
+	                break;
+	
+	            case 4:
+	                showCircumscribedCircleLength(rectangle);
+	                break;
+	
+	            case 5:
+	                showInscribedCircleRadius(rectangle);
+	                break;
+	
+	            case 6:
+	                System.out.println("\nВвод новых параметров прямоугольника.\n");
+	                rectangle = readRectangle();
+	                break;
+	
+	            case 0:
+	                System.out.println("\nРабота программы завершена.");
+	                return;
 
                 default:
                     System.out.println(
@@ -86,6 +103,10 @@ public class ConsoleUI {
         System.out.println("Выберите действие:");
         System.out.println("1) Периметр P = 2(a + b)");
         System.out.println("2) Площадь S = a * b");
+        System.out.println("3) Диагональ d = sqrt(a^2 + b^2)");
+        System.out.println("4) Длина описанной окружности C = π * d");
+        System.out.println("5) Радиус вписанной окружности (только квадрат)");
+        System.out.println("6) Ввести новые параметры");
         System.out.println("0) Выход");
         System.out.println("----------------------------------------");
     }
@@ -115,6 +136,55 @@ public class ConsoleUI {
                 "S = a * b = %.2f * %.2f = %.2f%n%n",
                 rectangle.getA(),
                 rectangle.getB(),
+                result
+        );
+    }
+    
+    private void showDiagonal(Rectangle rectangle) {
+
+        double result = rectangle.diagonal();
+
+        System.out.println("\nДиагональ:");
+
+        System.out.printf(
+                Locale.US,
+                "d = sqrt(a^2 + b^2) = sqrt(%.2f^2 + %.2f^2) = %.2f%n%n",
+                rectangle.getA(),
+                rectangle.getB(),
+                result
+        );
+    }
+    
+    private void showCircumscribedCircleLength(Rectangle rectangle) {
+
+        double diagonal = rectangle.diagonal();
+        double result = Math.PI * diagonal;
+
+        System.out.println("\nДлина описанной окружности:");
+
+        System.out.printf(
+                Locale.US,
+                "C = π * d = π * %.2f = %.2f%n%n",
+                diagonal,
+                result
+        );
+    }
+    
+    private void showInscribedCircleRadius(Rectangle rectangle) {
+
+        System.out.println("\nРадиус вписанной окружности:");
+
+        if (!rectangle.isSquare()) {
+            System.out.println("Вписанная окружность существует только для квадрата.\n");
+            return;
+        }
+
+        double result = rectangle.inscribedCircleRadius();
+
+        System.out.printf(
+                Locale.US,
+                "r = a / 2 = %.2f / 2 = %.2f%n%n",
+                rectangle.getA(),
                 result
         );
     }
