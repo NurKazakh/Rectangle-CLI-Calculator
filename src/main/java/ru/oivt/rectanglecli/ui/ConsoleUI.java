@@ -101,6 +101,7 @@ public class ConsoleUI {
 
         System.out.println("----------------------------------------");
         System.out.println("Выберите действие:");
+        System.out.println();
         System.out.println("1) Периметр P = 2(a + b)");
         System.out.println("2) Площадь S = a * b");
         System.out.println("3) Диагональ d = sqrt(a^2 + b^2)");
@@ -123,6 +124,7 @@ public class ConsoleUI {
                 rectangle.getB(),
                 result
         );
+        InputUtils.pause(scanner);
     }
 
     private void showArea(Rectangle rectangle) {
@@ -138,6 +140,7 @@ public class ConsoleUI {
                 rectangle.getB(),
                 result
         );
+        InputUtils.pause(scanner);
     }
     
     private void showDiagonal(Rectangle rectangle) {
@@ -153,6 +156,7 @@ public class ConsoleUI {
                 rectangle.getB(),
                 result
         );
+        InputUtils.pause(scanner);
     }
     
     private void showCircumscribedCircleLength(Rectangle rectangle) {
@@ -168,6 +172,7 @@ public class ConsoleUI {
                 diagonal,
                 result
         );
+        InputUtils.pause(scanner);
     }
     
     private void showInscribedCircleRadius(Rectangle rectangle) {
@@ -176,6 +181,7 @@ public class ConsoleUI {
 
         if (!rectangle.isSquare()) {
             System.out.println("Вписанная окружность существует только для квадрата.\n");
+            InputUtils.pause(scanner);
             return;
         }
 
@@ -187,5 +193,6 @@ public class ConsoleUI {
                 rectangle.getA(),
                 result
         );
+        InputUtils.pause(scanner);
     }
 }
