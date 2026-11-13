@@ -2,7 +2,9 @@ package ru.oivt.rectanglecli.util;
 
 import java.util.Scanner;
 
-public class InputUtils {
+public final class InputUtils {
+	
+    private InputUtils() {}
 
     public static double readPositiveDouble(Scanner sc, String prompt) {
 
