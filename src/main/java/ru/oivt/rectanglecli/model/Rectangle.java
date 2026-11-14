@@ -14,7 +14,6 @@ public class Rectangle {
             		"Длина и ширина должны быть конечными числами больше 0."
             );
         }
-
         this.a = a;
         this.b = b;
     }
@@ -38,7 +37,6 @@ public class Rectangle {
     public double diagonal() {
         return Math.hypot(a, b);
     }
-
 
     public boolean isSquare() {
         return Math.abs(a - b) <= EPS * Math.max(a, b);
