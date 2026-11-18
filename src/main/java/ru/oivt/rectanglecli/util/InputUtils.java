@@ -44,13 +44,19 @@ public final class InputUtils {
 
         if (input == null || input.trim().isEmpty()) {
             throw new NumberFormatException(
-                    "Поле ввода пустое."
+                    "Поле ввода пустое. Введите число."
             );
         }
 
-        double value = Double.parseDouble(
-                input.trim().replace(',', '.')
-        );
+        double value;
+
+        try {
+            value = Double.parseDouble(input.trim().replace(',', '.'));
+        } catch (NumberFormatException e) {
+        	throw new NumberFormatException(
+        			"Некорректный ввод. Введите число (например, 10 или 3.5)."
+            );
+        }
 
         if (!Double.isFinite(value)) {
             throw new NumberFormatException(

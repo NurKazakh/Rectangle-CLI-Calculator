@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import ru.oivt.rectanglecli.service.CalculationHistory;
+import ru.oivt.rectanglecli.service.CalculationResult;
 import ru.oivt.rectanglecli.service.ShapeCalculator;
 import ru.oivt.rectanglecli.util.InputUtils;
 
@@ -220,12 +221,9 @@ public class MainWindow extends JFrame {
 
         try {
 
-            String selectedShape =
-                    (String) shapeComboBox.getSelectedItem();
+            String selectedShape = (String) shapeComboBox.getSelectedItem();
 
-            double area;
-            double perimeter;
-            double[] result;
+            CalculationResult result;
 
             switch (selectedShape) {
 
@@ -257,41 +255,41 @@ public class MainWindow extends JFrame {
                     break;
 
                 default:
-                    throw new IllegalArgumentException(
-                            "Неизвестная геометрическая фигура."
-                    );
+                    return;
             }
 
-            area = result[0];
-            perimeter = result[1];
+            StringBuilder output = new StringBuilder("<html><div style='text-align: center;'>");
 
-            resultLabel.setText(String.format(
-                    "<html>Площадь: %.4f<br>Периметр: %.4f</html>",
-                    area,
-                    perimeter
-            ));
-            
-            calculationHistory.add(
-                    selectedShape,
-                    area,
-                    perimeter
-            );
+            output.append("<b>")
+                  .append(result.getShapeName())
+                  .append("</b><br><br>");
 
-        } catch (NumberFormatException e) {
+            for (var entry : result.getValues().entrySet()) {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Пожалуйста, введите действительные числовые значения.",
-                    "Ошибка ввода",
-                    JOptionPane.ERROR_MESSAGE
-            );
+                output.append(entry.getKey())
+                      .append(": ");
+
+                Object value = entry.getValue();
+
+                if (value instanceof Number) {
+                    output.append(String.format("%.4f", ((Number) value).doubleValue()));
+                } else {
+                    output.append(value);
+                }
+
+                output.append("<br>");
+            }
+
+            output.append("</div></html>");
+
+            resultLabel.setText(output.toString());
+            calculationHistory.add(result);
 
         } catch (IllegalArgumentException e) {
-
             JOptionPane.showMessageDialog(
                     this,
                     e.getMessage(),
-                    "Ошибка расчета",
+                    "Ошибка ввода",
                     JOptionPane.ERROR_MESSAGE
             );
         }

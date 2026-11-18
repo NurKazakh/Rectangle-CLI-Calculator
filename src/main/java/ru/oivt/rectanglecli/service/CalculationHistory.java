@@ -2,6 +2,7 @@ package ru.oivt.rectanglecli.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CalculationHistory {
 
@@ -11,14 +12,33 @@ public class CalculationHistory {
         history = new ArrayList<>();
     }
 
-    public void add(String shape, double area, double perimeter) {
+    public void add(CalculationResult calculationResult) {
 
-        history.add(String.format(
-                "%s | Площадь: %.4f | Периметр: %.4f",
-                shape,
-                area,
-                perimeter
-        ));
+        StringBuilder entry = new StringBuilder();
+
+        entry.append(calculationResult.getShapeName()).append("\n");
+
+        for (Map.Entry<String, Object> item :
+                calculationResult.getValues().entrySet()) {
+
+            entry.append(item.getKey())
+                 .append(": ");
+
+            Object value = item.getValue();
+
+            if (value instanceof Number) {
+                entry.append(String.format(
+                        "%.4f",
+                        ((Number) value).doubleValue()
+                ));
+            } else {
+                entry.append(value);
+            }
+
+            entry.append("\n");
+        }
+
+        history.add(entry.toString());
     }
 
     public boolean isEmpty() {
@@ -34,7 +54,7 @@ public class CalculationHistory {
             result.append(i + 1)
                   .append(". ")
                   .append(history.get(i))
-                  .append("\n\n");
+                  .append("\n");
         }
 
         return result.toString();
