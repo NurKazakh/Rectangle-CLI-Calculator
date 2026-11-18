@@ -245,7 +245,7 @@ public final class UIStyles {
         );
     }
 
-    public static void styleList(JList<String> list) {
+    public static void styleList(JList<?> list) {
 
         list.setFont(DEFAULT_FONT);
         list.setForeground(TEXT);
@@ -265,6 +265,8 @@ public final class UIStyles {
         list.setSelectionForeground(WHITE);
 
         list.setCellRenderer(new DefaultListCellRenderer() {
+        	
+        	private static final long serialVersionUID = 1L;
 
             @Override
             public Component getListCellRendererComponent(

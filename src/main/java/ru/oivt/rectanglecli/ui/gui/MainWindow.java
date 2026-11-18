@@ -31,6 +31,8 @@ import ru.oivt.rectanglecli.util.InputUtils;
 
 public class MainWindow extends JFrame {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private CardLayout cardLayout;
 	private JPanel inputPanel;
 	
@@ -635,9 +637,11 @@ public class MainWindow extends JFrame {
             area.setForeground(UIStyles.TEXT);
             area.setCaretColor(UIStyles.TEXT);
 
-        } else if (component instanceof JList<?>) {
+        } else if (component instanceof JList<?> list) {
 
-            UIStyles.styleList((JList<String>) component);
+            if (list.getModel() instanceof javax.swing.ListModel<?>) {
+                UIStyles.styleList(list);
+            }
         }
 
         if (component instanceof Container) {

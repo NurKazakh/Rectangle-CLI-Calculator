@@ -11,6 +11,8 @@ import java.awt.geom.AffineTransform;
 import javax.swing.JPanel;
 
 public class ShapePreviewPanel extends JPanel {
+	
+	private static final long serialVersionUID = 1L;
 
     private String shapeName = "Прямоугольник";
     private double[] parameters = {};
