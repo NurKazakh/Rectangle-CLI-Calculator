@@ -3,6 +3,8 @@ package ru.oivt.rectanglecli.ui.gui;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -18,6 +20,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import ru.oivt.rectanglecli.service.CalculationHistory;
 import ru.oivt.rectanglecli.service.CalculationResult;
@@ -26,11 +31,9 @@ import ru.oivt.rectanglecli.util.InputUtils;
 
 public class MainWindow extends JFrame {
 	
-	private JList<String> shapeList;
-	private JButton themeButton;
-	
 	private CardLayout cardLayout;
 	private JPanel inputPanel;
+	
 	private JTextField lengthField;
 	private JTextField widthField;
 	private JTextField sideField;
@@ -38,13 +41,15 @@ public class MainWindow extends JFrame {
 	private JTextField sideAField;
 	private JTextField sideBField;
 	private JTextField sideCField;
-	
 	private JTextArea resultArea;
 	private JTextArea historyArea;
 
+	private JList<String> shapeList;
+	private JButton themeButton;
 	private JButton calculateButton;
 	private JButton clearButton;
 	
+	private ShapePreviewPanel shapePreviewPanel;
 	private CalculationHistory calculationHistory;
 	private ShapeCalculator shapeCalculator;
 	
@@ -81,15 +86,14 @@ public class MainWindow extends JFrame {
         // Правая зона — результаты и история
         add(createRightPanel(), BorderLayout.EAST);
 
-        // Обработка выбора фигуры
         shapeList.addListSelectionListener(e -> {
-
             if (!e.getValueIsAdjusting()) {
-
                 String selectedShape = shapeList.getSelectedValue();
 
                 if (selectedShape != null) {
                     cardLayout.show(inputPanel, selectedShape);
+                    shapePreviewPanel.setShape(selectedShape);
+                    updatePreview();
                 }
             }
         });
@@ -150,26 +154,67 @@ public class MainWindow extends JFrame {
         title.setFont(UIStyles.TITLE_FONT);
 
         initializeInputPanels();
+        
+        shapePreviewPanel = new ShapePreviewPanel();
+        shapePreviewPanel.setShape("Прямоугольник");
+        
+        JPanel centerContent = new JPanel(new GridBagLayout());
+        centerContent.setBackground(UIStyles.PANEL);
 
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.gridx = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+
+        JPanel previewContainer = new JPanel(new BorderLayout(5, 5));
+        previewContainer.setBackground(UIStyles.PANEL);
+
+        JLabel previewTitle = UIStyles.createLabel("Визуализация фигуры");
+        previewTitle.setHorizontalAlignment(SwingConstants.CENTER);
+
+        previewContainer.add(previewTitle, BorderLayout.NORTH);
+        previewContainer.add(shapePreviewPanel, BorderLayout.CENTER);
+
+        // Preview занимает 2/3 пространства
+        gbc.gridy = 0;
+        gbc.weighty = 2.0;
+
+        centerContent.add(previewContainer, gbc);
+
+        // Поля ввода занимают 1/3 пространства
+        gbc.gridy = 1;
+        gbc.weighty = 1.0;
+
+        centerContent.add(inputPanel, gbc);
+        
+        // Кнопка "Рассчитать"
         calculateButton = UIStyles.createPrimaryButton("Рассчитать");
         calculateButton.addActionListener(e -> calculate());
         
-     // Запуск вычислений нажатием Enter
+        // Запуск вычислений нажатием Enter
         lengthField.addActionListener(e -> calculate());
         widthField.addActionListener(e -> calculate());
-
         sideField.addActionListener(e -> calculate());
-
         radiusField.addActionListener(e -> calculate());
-
         sideAField.addActionListener(e -> calculate());
         sideBField.addActionListener(e -> calculate());
         sideCField.addActionListener(e -> calculate());
         
         getRootPane().setDefaultButton(calculateButton);
+        
+        // Обновление Preview при изменении параметров
+        addPreviewListener(lengthField);
+        addPreviewListener(widthField);
+        addPreviewListener(sideField);
+        addPreviewListener(radiusField);
+        addPreviewListener(sideAField);
+        addPreviewListener(sideBField);
+        addPreviewListener(sideCField);
+        
 
         panel.add(title, BorderLayout.NORTH);
-        panel.add(inputPanel, BorderLayout.CENTER);
+        panel.add(centerContent, BorderLayout.CENTER);
         panel.add(calculateButton, BorderLayout.SOUTH);
 
         return panel;
@@ -237,7 +282,7 @@ public class MainWindow extends JFrame {
     
     private JPanel createRectanglePanel() {
 
-        JPanel panel = new JPanel(new GridLayout(2, 2, 12, 15));
+        JPanel panel = new JPanel(new GridLayout(2, 2, 12, 7));
 
         UIStyles.stylePanel(panel);
 
@@ -258,7 +303,7 @@ public class MainWindow extends JFrame {
 
     private JPanel createSquarePanel() {
 
-        JPanel panel = new JPanel(new GridLayout(1, 2, 12, 15));
+        JPanel panel = new JPanel(new GridLayout(1, 2, 12, 7));
 
         UIStyles.stylePanel(panel);
 
@@ -274,7 +319,7 @@ public class MainWindow extends JFrame {
 
     private JPanel createCirclePanel() {
 
-        JPanel panel = new JPanel(new GridLayout(1, 2, 12, 15));
+        JPanel panel = new JPanel(new GridLayout(1, 2, 12, 7));
 
         UIStyles.stylePanel(panel);
 
@@ -290,7 +335,7 @@ public class MainWindow extends JFrame {
 
     private JPanel createTrianglePanel() {
 
-        JPanel panel = new JPanel(new GridLayout(3, 2, 12, 15));
+        JPanel panel = new JPanel(new GridLayout(3, 2, 12, 7));
 
         UIStyles.stylePanel(panel);
 
@@ -328,7 +373,74 @@ public class MainWindow extends JFrame {
 
         cardLayout.show(inputPanel, "Прямоугольник");
     }
-   
+
+    private void addPreviewListener(JTextField field) {
+
+        field.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updatePreview();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updatePreview();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updatePreview();
+            }
+        });
+    }
+    
+    private void updatePreview() {
+
+        String selectedShape = shapeList.getSelectedValue();
+
+        if (selectedShape == null) {
+            return;
+        }
+
+        try {
+
+            switch (selectedShape) {
+
+                case "Прямоугольник":
+                    shapePreviewPanel.setParameters(
+                            readValue(lengthField),
+                            readValue(widthField)
+                    );
+                    break;
+
+                case "Квадрат":
+                    shapePreviewPanel.setParameters(
+                            readValue(sideField)
+                    );
+                    break;
+
+                case "Круг":
+                    shapePreviewPanel.setParameters(
+                            readValue(radiusField)
+                    );
+                    break;
+
+                case "Треугольник":
+                    shapePreviewPanel.setParameters(
+                            readValue(sideAField),
+                            readValue(sideBField),
+                            readValue(sideCField)
+                    );
+                    break;
+            }
+
+        } catch (IllegalArgumentException e) {
+
+            shapePreviewPanel.setParameters();
+        }
+    }
+    
     private void calculate() {
 
         try {

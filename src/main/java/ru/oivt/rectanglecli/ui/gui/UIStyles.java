@@ -241,8 +241,7 @@ public final class UIStyles {
         field.setBorder(
                 BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(BORDER),
-                        BorderFactory.createEmptyBorder(7, 8, 7, 8)
-                )
+                        BorderFactory.createEmptyBorder(4, 8, 4, 8)                )
         );
     }
 
