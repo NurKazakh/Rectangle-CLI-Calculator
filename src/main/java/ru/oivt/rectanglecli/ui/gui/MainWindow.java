@@ -4,7 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Component;
+import java.awt.Container;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -24,6 +27,8 @@ import ru.oivt.rectanglecli.util.InputUtils;
 public class MainWindow extends JFrame {
 	
 	private JList<String> shapeList;
+	private JButton themeButton;
+	
 	private CardLayout cardLayout;
 	private JPanel inputPanel;
 	private JTextField lengthField;
@@ -88,6 +93,12 @@ public class MainWindow extends JFrame {
                 }
             }
         });
+        
+        themeButton.addActionListener(e -> {
+            UIStyles.setDarkTheme(!UIStyles.isDarkTheme());
+
+            updateTheme();
+        });
     }
     
     private JPanel createSelectionPanel() {
@@ -102,11 +113,11 @@ public class MainWindow extends JFrame {
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
         titlePanel.setBackground(UIStyles.PANEL);
 
-        JLabel titleLine1 = UIStyles.createLabel("Геометрические");
-        JLabel titleLine2 = UIStyles.createLabel("фигуры");
+        JLabel titleLine1 = UIStyles.createLabel("GEOMETRIC");
+        JLabel titleLine2 = UIStyles.createLabel("CALCULATOR");
 
-        titleLine1.setFont(UIStyles.BUTTON_FONT);
-        titleLine2.setFont(UIStyles.BUTTON_FONT);
+        titleLine1.setFont(UIStyles.HEAD_FONT);
+        titleLine2.setFont(UIStyles.HEAD_FONT);
 
         titlePanel.add(titleLine1);
         titlePanel.add(titleLine2);
@@ -117,11 +128,14 @@ public class MainWindow extends JFrame {
                 "Круг",
                 "Треугольник"
         });
+        
+        themeButton = UIStyles.createButton("Светлая тема");
 
         shapeList.setSelectedIndex(0);
 
         panel.add(titlePanel, BorderLayout.NORTH);
         panel.add(shapeList, BorderLayout.CENTER);
+        panel.add(themeButton, BorderLayout.SOUTH);
 
         return panel;
     }
@@ -444,6 +458,83 @@ public class MainWindow extends JFrame {
             case "Треугольник":
                 sideAField.requestFocusInWindow();
                 break;
+        }
+    }
+
+    private void updateTheme() {
+
+        updateComponentTheme(getContentPane());
+
+        getContentPane().setBackground(UIStyles.BACKGROUND);
+
+        themeButton.setText(
+                UIStyles.isDarkTheme()
+                        ? "Светлая тема"
+                        : "Тёмная тема"
+        );
+
+        repaint();
+        revalidate();
+    }
+    
+    private void updateComponentTheme(Component component) {
+
+        if (component instanceof JPanel) {
+
+            UIStyles.stylePanel((JPanel) component);
+
+        } else if (component instanceof JLabel) {
+
+            component.setForeground(UIStyles.TEXT);
+
+        } else if (component instanceof JButton) {
+
+            JButton button = (JButton) component;
+
+            if (button == calculateButton) {
+                UIStyles.stylePrimaryButton(button);
+            } else {
+                UIStyles.styleButton(button);
+            }
+
+        } else if (component instanceof JTextField) {
+
+            UIStyles.styleTextField((JTextField) component);
+            
+        } else if (component instanceof JScrollPane) {
+
+            JScrollPane scrollPane = (JScrollPane) component;
+
+            scrollPane.setBackground(UIStyles.PANEL);
+
+            scrollPane.getViewport().setBackground(
+                    UIStyles.INPUT_BACKGROUND
+            );
+
+            scrollPane.setBorder(
+                    BorderFactory.createLineBorder(UIStyles.BORDER)
+            );
+            
+        } else if (component instanceof JTextArea) {
+
+            JTextArea area = (JTextArea) component;
+
+            area.setBackground(UIStyles.INPUT_BACKGROUND);
+            area.setForeground(UIStyles.TEXT);
+            area.setCaretColor(UIStyles.TEXT);
+
+        } else if (component instanceof JList<?>) {
+
+            UIStyles.styleList((JList<String>) component);
+        }
+
+        if (component instanceof Container) {
+
+            Container container = (Container) component;
+
+            for (Component child : container.getComponents()) {
+                updateComponentTheme(child);
+            }
         }
     }
 }
