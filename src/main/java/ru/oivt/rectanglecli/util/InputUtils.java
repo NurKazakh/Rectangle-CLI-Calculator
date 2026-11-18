@@ -40,6 +40,33 @@ public final class InputUtils {
         }
     }
 
+    public static double parsePositiveDouble(String input) {
+
+        if (input == null || input.trim().isEmpty()) {
+            throw new NumberFormatException(
+                    "Поле ввода пустое."
+            );
+        }
+
+        double value = Double.parseDouble(
+                input.trim().replace(',', '.')
+        );
+
+        if (!Double.isFinite(value)) {
+            throw new NumberFormatException(
+                    "Необходимо ввести конечное число."
+            );
+        }
+
+        if (value <= 0) {
+            throw new IllegalArgumentException(
+                    "Значение должно быть больше 0."
+            );
+        }
+
+        return value;
+    }
+    
     public static int readInt(Scanner sc, String prompt) {
         while (true) {
         	

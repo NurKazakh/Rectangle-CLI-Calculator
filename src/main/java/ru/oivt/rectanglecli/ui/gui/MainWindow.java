@@ -1,25 +1,21 @@
 package ru.oivt.rectanglecli.ui.gui;
 
-import ru.oivt.rectanglecli.model.Rectangle;
-import ru.oivt.rectanglecli.model.Square;
-import ru.oivt.rectanglecli.model.Circle;
-import ru.oivt.rectanglecli.model.Triangle;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.CardLayout;
+import java.awt.Dimension;
 
-import javax.swing.JTextField;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.JComboBox;
+
+import ru.oivt.rectanglecli.service.CalculationHistory;
+import ru.oivt.rectanglecli.service.ShapeCalculator;
+import ru.oivt.rectanglecli.util.InputUtils;
 
 public class MainWindow extends JFrame {
 	
@@ -35,19 +31,24 @@ public class MainWindow extends JFrame {
 	private JTextField sideBField;
 	private JTextField sideCField;
 	
-	private List<String> calculationHistory;
-	
 	private JLabel resultLabel;
 	private JButton calculateButton;
 	
+	private CalculationHistory calculationHistory;
+	private ShapeCalculator shapeCalculator;
+	
     public MainWindow() {
-    	calculationHistory = new ArrayList<>();
+    	shapeCalculator = new ShapeCalculator();
+    	calculationHistory = new CalculationHistory();
 
         setTitle("Geometric GUI Calculator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        setSize(750, 500);
-        setMinimumSize(new Dimension(650, 450));
+        setSize(UIStyles.WINDOW_WIDTH, UIStyles.WINDOW_HEIGHT);
+        setMinimumSize(new Dimension(
+                UIStyles.MIN_WINDOW_WIDTH,
+                UIStyles.MIN_WINDOW_HEIGHT
+        ));
 
         setLocationRelativeTo(null);
 
@@ -66,8 +67,7 @@ public class MainWindow extends JFrame {
         UIStyles.styleTitle(titleLabel);
 
         JPanel headerPanel = new JPanel();
-        headerPanel.setBackground(UIStyles.BACKGROUND);
-        headerPanel.setBorder(UIStyles.HEADER_BORDER);
+        UIStyles.stylePanel(headerPanel);
         headerPanel.add(titleLabel);
 
         add(headerPanel, BorderLayout.PAGE_START);
@@ -77,16 +77,14 @@ public class MainWindow extends JFrame {
         JPanel selectionPanel = new JPanel();
         selectionPanel.setBackground(UIStyles.BACKGROUND);
 
-        JLabel shapeLabel = new JLabel("Выберите фигуру:");
-        UIStyles.styleLabel(shapeLabel);
+        JLabel shapeLabel = UIStyles.createLabel("Выберите фигуру:");
 
-        shapeComboBox = new JComboBox<>(new String[] {
+        shapeComboBox = UIStyles.createComboBox(new String[]{
                 "Прямоугольник",
                 "Квадрат",
                 "Круг",
                 "Треугольник"
         });
-        shapeComboBox.setFont(UIStyles.DEFAULT_FONT);
 
         selectionPanel.add(shapeLabel);
         selectionPanel.add(shapeComboBox);
@@ -112,16 +110,11 @@ public class MainWindow extends JFrame {
 
         JPanel panel = new JPanel();
 
-        lengthField = new JTextField(10);
-        widthField = new JTextField(10);
+        lengthField = UIStyles.createTextField(10);
+        widthField = UIStyles.createTextField(10);
 
-        JLabel lengthLabel = new JLabel("Длина:");
-        JLabel widthLabel = new JLabel("Ширина:");
-
-        UIStyles.styleTextField(lengthField);
-        UIStyles.styleTextField(widthField);
-        UIStyles.styleLabel(lengthLabel);
-        UIStyles.styleLabel(widthLabel);
+        JLabel lengthLabel = UIStyles.createLabel("Длина:");
+        JLabel widthLabel = UIStyles.createLabel("Ширина:");
 
         panel.add(lengthLabel);
         panel.add(lengthField);
@@ -135,13 +128,10 @@ public class MainWindow extends JFrame {
 
         JPanel panel = new JPanel();
 
-        sideField = new JTextField(10);
-        
-        JLabel sideLabel = new JLabel("Сторона:");
-        
-        UIStyles.styleTextField(sideField);
-        UIStyles.styleLabel(sideLabel);
+        sideField = UIStyles.createTextField(10);
 
+        JLabel sideLabel = UIStyles.createLabel("Сторона:");
+        
         panel.add(sideLabel);
         panel.add(sideField);
 
@@ -151,13 +141,10 @@ public class MainWindow extends JFrame {
     private JPanel createCirclePanel() {
 
         JPanel panel = new JPanel();
-
-        radiusField = new JTextField(10);
-
-        JLabel radiusLabel = new JLabel("Радиус:");
         
-        UIStyles.styleTextField(radiusField);
-        UIStyles.styleLabel(radiusLabel);
+        radiusField = UIStyles.createTextField(10);
+
+        JLabel radiusLabel = UIStyles.createLabel("Радиус:");
 
         panel.add(radiusLabel);
         panel.add(radiusField);
@@ -169,20 +156,13 @@ public class MainWindow extends JFrame {
 
         JPanel panel = new JPanel();
 
-        sideAField = new JTextField(5);
-        sideBField = new JTextField(5);
-        sideCField = new JTextField(5);
+        sideAField = UIStyles.createTextField(5);
+        sideBField = UIStyles.createTextField(5);
+        sideCField = UIStyles.createTextField(5);
 
-        JLabel sideALabel = new JLabel("Сторона A:");
-        JLabel sideBLabel = new JLabel("Сторона B:");
-        JLabel sideCLabel = new JLabel("Сторона C:");
-
-        UIStyles.styleTextField(sideAField);
-        UIStyles.styleTextField(sideBField);
-        UIStyles.styleTextField(sideCField);
-        UIStyles.styleLabel(sideALabel);
-        UIStyles.styleLabel(sideBLabel);
-        UIStyles.styleLabel(sideCLabel);
+        JLabel sideALabel = UIStyles.createLabel("Сторона A:");
+        JLabel sideBLabel = UIStyles.createLabel("Сторона B:");
+        JLabel sideCLabel = UIStyles.createLabel("Сторона C:");
 
         panel.add(sideALabel);
         panel.add(sideAField);
@@ -213,20 +193,16 @@ public class MainWindow extends JFrame {
     private JPanel createResultPanel() {
 
         JPanel panel = new JPanel();
+        UIStyles.stylePanel(panel);
 
-        panel.setBackground(UIStyles.BACKGROUND);
-
-        resultLabel = new JLabel(
+        resultLabel = UIStyles.createLabel(
                 "Площадь: -    Периметр: -"
         );
-        calculateButton = new JButton("Рассчитать");
-        JButton historyButton = new JButton("История");
-        JButton clearButton = new JButton("Очистить");
 
-        UIStyles.styleLabel(resultLabel);
-        UIStyles.stylePrimaryButton(calculateButton);
-        UIStyles.styleButton(historyButton);
-        UIStyles.styleButton(clearButton);
+        calculateButton = UIStyles.createPrimaryButton("Рассчитать");
+
+        JButton historyButton = UIStyles.createButton("История");
+        JButton clearButton = UIStyles.createButton("Очистить");
 
         calculateButton.addActionListener(e -> calculate());
         historyButton.addActionListener(e -> showHistory());
@@ -249,54 +225,35 @@ public class MainWindow extends JFrame {
 
             double area;
             double perimeter;
+            double[] result;
 
             switch (selectedShape) {
 
                 case "Прямоугольник":
-
-                    Rectangle rectangle = new Rectangle(
+                    result = shapeCalculator.calculateRectangle(
                             readValue(lengthField),
                             readValue(widthField)
                     );
-
-                    area = rectangle.area();
-                    perimeter = rectangle.perimeter();
-
                     break;
 
                 case "Квадрат":
-
-                    Square square = new Square(
+                    result = shapeCalculator.calculateSquare(
                             readValue(sideField)
                     );
-
-                    area = square.area();
-                    perimeter = square.perimeter();
-
                     break;
 
                 case "Круг":
-
-                    Circle circle = new Circle(
+                    result = shapeCalculator.calculateCircle(
                             readValue(radiusField)
                     );
-
-                    area = circle.area();
-                    perimeter = circle.circumference();
-
                     break;
 
                 case "Треугольник":
-
-                    Triangle triangle = new Triangle(
+                    result = shapeCalculator.calculateTriangle(
                             readValue(sideAField),
                             readValue(sideBField),
                             readValue(sideCField)
                     );
-
-                    area = triangle.area();
-                    perimeter = triangle.perimeter();
-
                     break;
 
                 default:
@@ -305,18 +262,20 @@ public class MainWindow extends JFrame {
                     );
             }
 
+            area = result[0];
+            perimeter = result[1];
+
             resultLabel.setText(String.format(
                     "<html>Площадь: %.4f<br>Периметр: %.4f</html>",
                     area,
                     perimeter
             ));
             
-            calculationHistory.add(String.format(
-                    "%s | Площадь: %.4f | Периметр: %.4f",
+            calculationHistory.add(
                     selectedShape,
                     area,
                     perimeter
-            ));
+            );
 
         } catch (NumberFormatException e) {
 
@@ -339,55 +298,24 @@ public class MainWindow extends JFrame {
     }
     
     private double readValue(JTextField field) {
-
-        String input = field.getText().trim();
-
-        if (input.isEmpty()) {
-            throw new NumberFormatException(
-                    "Поле ввода пустое."
-            );
-        }
-
-        double value = Double.parseDouble(
-                input.replace(',', '.')
-        );
-
-        if (!Double.isFinite(value)) {
-            throw new NumberFormatException(
-                    "Необходимо ввести конечное число."
-            );
-        }
-
-        return value;
+        return InputUtils.parsePositiveDouble(field.getText());
     }
     
     private void showHistory() {
 
         if (calculationHistory.isEmpty()) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "История вычислений пуста.",
                     "История",
                     JOptionPane.INFORMATION_MESSAGE
             );
-
             return;
-        }
-
-        StringBuilder history = new StringBuilder();
-
-        for (int i = 0; i < calculationHistory.size(); i++) {
-
-            history.append(i + 1)
-                   .append(". ")
-                   .append(calculationHistory.get(i))
-                   .append("\n\n");
         }
 
         JOptionPane.showMessageDialog(
                 this,
-                history.toString(),
+                calculationHistory.getFormattedHistory(),
                 "История вычислений",
                 JOptionPane.INFORMATION_MESSAGE
         );
