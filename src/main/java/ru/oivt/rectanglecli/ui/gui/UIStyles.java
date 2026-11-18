@@ -2,10 +2,17 @@ package ru.oivt.rectanglecli.ui.gui;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Component;
+import java.awt.FontFormatException;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.ListSelectionModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -17,47 +24,64 @@ public final class UIStyles {
         // Запрещаем создание экземпляров класса
     }
 
-    // ==============================
-    // Цветовая палитра
-    // ==============================
+ // ==============================
+ // Цветовая палитра
+ // ==============================
 
-    public static final Color BACKGROUND =
-            new Color(245, 247, 250);
-
-    public static final Color PRIMARY =
-            new Color(35, 55, 85);
-
-    public static final Color BUTTON =
-            new Color(45, 110, 200);
-
-    public static final Color WHITE =
-            Color.WHITE;
-
-    public static final Color TEXT =
-            new Color(45, 55, 70);
+	 public static final Color BACKGROUND =
+	         new Color(23, 26, 33);
+	
+	 public static final Color PANEL =
+	         new Color(34, 39, 51);
+	
+	 public static final Color INPUT_BACKGROUND =
+	         new Color(43, 50, 64);
+	
+	 public static final Color PRIMARY =
+	         new Color(91, 141, 239);
+	
+	 public static final Color BUTTON =
+	         new Color(52, 120, 246);
+	
+	 public static final Color WHITE =
+	         new Color(230, 234, 240);
+	
+	 public static final Color TEXT =
+	         new Color(230, 234, 240);
+	
+	 public static final Color MUTED =
+	         new Color(146, 155, 173);
+	
+	 public static final Color BORDER =
+	         new Color(58, 66, 82);
 
     // ==============================
     // Шрифты
     // ==============================
 
-    public static final Font TITLE_FONT =
-            new Font("Arial", Font.BOLD, 26);
+	 private static final Font PIXEL_FONT = loadPixelFont();
 
-    public static final Font DEFAULT_FONT =
-            new Font("Arial", Font.PLAIN, 14);
+	 public static final Font TITLE_FONT =
+	         PIXEL_FONT.deriveFont(Font.BOLD, 26f);
 
-    public static final Font BUTTON_FONT =
-            new Font("Arial", Font.BOLD, 14);
+	 public static final Font DEFAULT_FONT =
+	         PIXEL_FONT.deriveFont(Font.PLAIN, 14f);
+
+	 public static final Font BUTTON_FONT =
+	         PIXEL_FONT.deriveFont(Font.BOLD, 14f);
+	 
+	 public static final Font SMALL_FONT =
+		        new Font("Monospaced", Font.BOLD, 14);
 
     // ==============================
     // Размеры окна
     // ==============================
 
-    public static final int WINDOW_WIDTH = 750;
-    public static final int WINDOW_HEIGHT = 500;
+    public static final int WINDOW_WIDTH = 1100;
+    public static final int WINDOW_HEIGHT = 700;
 
-    public static final int MIN_WINDOW_WIDTH = 650;
-    public static final int MIN_WINDOW_HEIGHT = 450;
+    public static final int MIN_WINDOW_WIDTH = 950;
+    public static final int MIN_WINDOW_HEIGHT = 600;
 
     // ==============================
     // Отступы и рамки
@@ -75,7 +99,7 @@ public final class UIStyles {
 
     public static void styleTitle(JLabel label) {
         label.setFont(TITLE_FONT);
-        label.setForeground(PRIMARY);
+        label.setForeground(WHITE);
     }
 
     public static void styleLabel(JLabel label) {
@@ -85,28 +109,98 @@ public final class UIStyles {
 
     public static void styleButton(JButton button) {
         button.setFont(BUTTON_FONT);
+        button.setForeground(TEXT);
+        button.setBackground(INPUT_BACKGROUND);
         button.setFocusPainted(false);
+        button.setOpaque(true);
+        button.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(BORDER),
+                        BorderFactory.createEmptyBorder(8, 14, 8, 14)
+                )
+        );
     }
 
     public static void stylePrimaryButton(JButton button) {
         styleButton(button);
         button.setBackground(BUTTON);
         button.setForeground(WHITE);
-        button.setOpaque(true);
+        button.setBorder(
+                BorderFactory.createEmptyBorder(9, 18, 9, 18)
+        );
     }
 
     public static void styleTextField(JTextField field) {
         field.setFont(DEFAULT_FONT);
+        field.setForeground(WHITE);
+        field.setBackground(INPUT_BACKGROUND);
+        field.setCaretColor(WHITE);
+        field.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(BORDER),
+                        BorderFactory.createEmptyBorder(7, 8, 7, 8)
+                )
+        );
     }
 
-    public static void styleComboBox(JComboBox<?> comboBox) {
-        comboBox.setFont(DEFAULT_FONT);
-    }
+    public static void styleList(JList<String> list) {
 
+        list.setFont(DEFAULT_FONT);
+        list.setForeground(WHITE);
+        list.setBackground(PANEL);
+
+        list.setSelectionMode(
+                ListSelectionModel.SINGLE_SELECTION
+        );
+
+        list.setFixedCellHeight(45);
+
+        list.setBorder(
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        );
+
+        list.setSelectionBackground(BUTTON);
+        list.setSelectionForeground(WHITE);
+
+        list.setCellRenderer(new DefaultListCellRenderer() {
+
+            @Override
+            public Component getListCellRendererComponent(
+                    JList<?> list,
+                    Object value,
+                    int index,
+                    boolean isSelected,
+                    boolean cellHasFocus
+            ) {
+
+                JLabel label = (JLabel) super.getListCellRendererComponent(
+                        list, value, index, isSelected, cellHasFocus
+                );
+
+                label.setBorder(
+                        BorderFactory.createEmptyBorder(5, 12, 5, 12)
+                );
+
+                label.setOpaque(true);
+
+                if (isSelected) {
+                    label.setBackground(BUTTON);
+                    label.setForeground(WHITE);
+                } else {
+                    label.setBackground(PANEL);
+                    label.setForeground(TEXT);
+                }
+
+                return label;
+            }
+        });
+    }
+    
     public static void stylePanel(JPanel panel) {
-        panel.setBackground(BACKGROUND);
-        panel.setBorder(HEADER_BORDER);
-
+        panel.setBackground(PANEL);
+        panel.setBorder(
+                BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        );
     }
 
     // ==============================
@@ -149,12 +243,34 @@ public final class UIStyles {
         return field;
     }
 
-    public static JComboBox<String> createComboBox(String[] items) {
+    public static JList<String> createList(String[] items) {
 
-        JComboBox<String> comboBox = new JComboBox<>(items);
+        JList<String> list = new JList<>(items);
 
-        styleComboBox(comboBox);
+        styleList(list);
 
-        return comboBox;
+        return list;
+    }
+    
+    // ==============================
+    // Загрузка шрифта
+    // ==============================
+    
+    private static Font loadPixelFont() {
+        try (InputStream stream = UIStyles.class.getResourceAsStream(
+                "/fonts/PressStart2P-Regular.ttf")) {
+
+            if (stream == null) {
+                throw new IOException("Файл шрифта не найден");
+            }
+
+            return Font.createFont(Font.TRUETYPE_FONT, stream);
+
+        } catch (FontFormatException | IOException e) {
+            System.err.println("Не удалось загрузить пиксельный шрифт: "
+                    + e.getMessage());
+
+            return new Font("Monospaced", Font.PLAIN, 14);
+        }
     }
 }
